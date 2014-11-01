@@ -4,3 +4,7 @@
     padding: 5px;
     box-sizing: border-box;
 }
+
+span {
+    padding-right: 5em;
+}

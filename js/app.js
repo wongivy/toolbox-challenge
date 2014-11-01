@@ -13,22 +13,22 @@ for (idx =1; idx <= 32; idx++) {
     });
 } //for each tile
 
-console.log(tiles);
+var previousImage = null;
+var detectClick = true;
+var wrongCount = 0;
+var pairsLeft = 8;
 
 //when document is ready
 $(document).ready(function() {
     $('#start-game').click(function() {
-       console.log('start game button clicked');
         tiles = _.shuffle(tiles);
         var selectedTiles = tiles.slice(0,8);
         var tilePairs = [];
         _.forEach(selectedTiles, function(tile) {
             tilePairs.push(tile);
             tilePairs.push(_.clone(tile));
-
         });
         tilePairs = _.shuffle(tilePairs);
-        console.log(tilePairs);
 
         var gameBoard = $('#game-board');
         var row = $(document.createElement('div'));
@@ -40,7 +40,7 @@ $(document).ready(function() {
             }
             img = $(document.createElement('img'));
             img.attr({
-                src: tile.src,
+                src: 'img/tile-back.png',
                 alt: 'tile ' + tile.tileNum
             });
             img.data('tile', tile);
@@ -55,16 +55,49 @@ $(document).ready(function() {
             $('#elapsed-seconds').text(elapsedSeconds + ' seconds');
         }, 1000);
 
-        $('#game-board img').click(function() {
-            //console.log(this.alt);
-            var clickedImg = $(this);
-            var tile = clickedImg.data('tile');
-            console.log(tile);
-            flipTile(tile, clickedImg);
-        });
+        $('#wrong-matches').text(wrongCount);
+        $('#matches-left').text(pairsLeft);
+        $('#matches-made').text(8 - pairsLeft);
 
+        $('#game-board img').click(function () {
+            if(!detectClick) {
+                return null;
+            } else {
+                var clickedImg = $(this);
+                var tile = clickedImg.data('tile');
+                if (!tile.flipped) {
+                    flipTile(tile, clickedImg);
+                    if (previousImage != null) {
+                        var previousTile = previousImage.data('tile');
+                        if (checkMatch(tile, previousTile)) {
+                            previousTile.matched = true;
+                            tile.matched = true;
+                            previousImage = null;
+                            pairsLeft--;
+
+                        } else {
+                            detectClick = false;
+                            wrongCount++;
+                            window.setTimeout(function () {
+                                flipTile(tile, clickedImg);
+                                flipTile(previousTile, previousImage);
+                                previousImage = null;
+                                detectClick = true;
+                            }, 1000);
+                            console.log(wrongCount, pairsLeft);
+                        }
+                    } else {
+                        previousImage = clickedImg;
+                    }
+                }
+            }
+        });
     });
 });
+
+function newGame() {
+
+}
 
 function flipTile(tile, img) {
     img.fadeOut(100, function() {
@@ -76,4 +109,14 @@ function flipTile(tile, img) {
         tile.flipped = !tile.flipped;
         img.fadeIn(100);
     });
+}
+
+function checkMatch(tile, previousTile) {
+    if (previousTile.src == tile.src) {
+        console.log('They matched');
+        return true;
+    } else {
+        console.log('They dont match');
+        return false;
+    }
 }

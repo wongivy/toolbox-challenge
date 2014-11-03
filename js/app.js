@@ -20,25 +20,18 @@ var pairsLeft;
 var timeElapsed;
 var minute;
 var seconds;
-var winWidth;
-var winHeight;
+var startTime;
 
 //when document is ready
 $(document).ready(function() {
+    $('#instructions').click(function () {
+       alert("To play this game, click pairs of tiles to find matches. If the tiles match, " +
+       "they will remain flipped over. Otherwise they will flip back over. Keep trying until you match all the tiles.");
+    });
+
     $('#start-game').click(function() {
         newGame();
-        var startTime = Date.now();
-        timeElapsed = window.setInterval(function() {
-            var elapsedSeconds = (Date.now() - startTime) / 1000;
-            elapsedSeconds = Math.floor(elapsedSeconds);
-            seconds = elapsedSeconds % 60;
-            if(seconds == 0) {
-                minute++;
-                seconds = 0;
-            }
-            $('#elapsed-seconds').text(minute + ' minutes ' + seconds + ' seconds');
-        }, 1000);
-
+        timer();
         runGame();
     });
 });
@@ -96,6 +89,8 @@ function runGame() {
                     if (checkMatch(tile, previousTile)) {
                         previousTile.matched = true;
                         tile.matched = true;
+                        $('#game-board').find(clickedImg).css('cursor', 'not-allowed');
+                        $('#game-board').find(previousImage).css('cursor', 'not-allowed');
                         previousImage = null;
                         pairsLeft--;
                         window.setTimeout(function () {
@@ -106,9 +101,12 @@ function runGame() {
                     } else {
                         detectClick = false;
                         wrongCount++;
+                        $('#game-board').find(clickedImg).css('cursor', 'not-allowed');
                         window.setTimeout(function () {
                             flipTile(tile, clickedImg);
                             flipTile(previousTile, previousImage);
+                            $('#game-board').find(clickedImg).css('cursor', 'pointer');
+                            $('#game-board').find(previousImage).css('cursor', 'pointer');
                             previousImage = null;
                             detectClick = true;
                         }, 1000);
@@ -116,6 +114,8 @@ function runGame() {
                     updateStats();
                 } else {
                     previousImage = clickedImg;
+                    $('#game-board').find(previousImage).css('cursor', 'not-allowed');
+
                 }
             }
         }
@@ -123,14 +123,40 @@ function runGame() {
 }
 
 function winner() {
-    alert('You win!');
+    window.clearInterval(timeElapsed);
+    if(window.confirm("Congrats! You won the game with " + wrongCount + " wrong matches! Do you want to play again or leave?")) {
+        window.location.reload();
+    } else {
+        window.location = 'http://www.google.com';
+    }
+
 }
 
-function resizeBoard(width, height) {
-    if(winHeight != height || winWidth != width) {
-        $("#game-board img").css("width", width / 4);
-        $('#game-board img').css("height", height / 4);
-    }
+function timer() {
+    startTime = Date.now();
+    timeElapsed = window.setInterval(function() {
+        var elapsedSeconds = (Date.now() - startTime) / 1000;
+        elapsedSeconds = Math.floor(elapsedSeconds);
+        seconds = elapsedSeconds % 60;
+        if(seconds == 0) {
+            minute++;
+            seconds = 0;
+        }
+        if (minute == 0) {
+            $('#elapsed-seconds').text(seconds + ' seconds');
+        } else if (minute == 1){
+            if(seconds == 0) {
+                $('#elapsed-seconds').text(minute + ' minute ');
+            } else {
+                $('#elapsed-seconds').text(minute + ' minute ' + seconds + ' seconds');
+            }
+        }else if(seconds == 0){
+            $('#elapsed-seconds').text(minute + ' minutes ');
+        } else {
+            $('#elapsed-seconds').text(minute + ' minutes ' + seconds + ' seconds');
+        }
+
+    }, 1000);
 }
 
 function flipTile(tile, img) {

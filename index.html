@@ -3,20 +3,21 @@
     <head lang="en">
         <meta charset="UTF-8">
         <title>Memory!</title>
-        <link rel="stylesheet" href="css/main.css"/>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/main.css"/>
     </head>
     <body>
         <h1>Memory!</h1>
+        <p><button id="instructions">Instructions</button></p>
         <p><button id="start-game">Start New Game</button></p>
         <div class="container row">
             <div class="col-md-3">Elapsed Time: <span id="elapsed-seconds"></span></div>
-            <div class="col-md-3">Wrong Matches: <span id="wrong-matches"></span></div>
-            <div class="col-md-3">Matches Left: <span id="matches-left"></span></div>
-            <div class="col-md-3">Matches Made: <span id="matches-made"></span></div>
+            <div align="center" class="col-md-3">Wrong Matches: <span id="wrong-matches"></span></div>
+            <div align="center" class="col-md-3">Matches Left: <span id="matches-left"></span></div>
+            <div align="center" class="col-md-3">Matches Made: <span id="matches-made"></span></div>
         </div>
 
-        <div id="game-board"></div>
+        <div align="center" id="game-board"></div>
 
         <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>

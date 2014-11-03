@@ -20,12 +20,13 @@ var pairsLeft;
 var timeElapsed;
 var minute;
 var seconds;
+var winWidth;
+var winHeight;
 
 //when document is ready
 $(document).ready(function() {
     $('#start-game').click(function() {
         newGame();
-
         var startTime = Date.now();
         timeElapsed = window.setInterval(function() {
             var elapsedSeconds = (Date.now() - startTime) / 1000;
@@ -123,6 +124,13 @@ function runGame() {
 
 function winner() {
     alert('You win!');
+}
+
+function resizeBoard(width, height) {
+    if(winHeight != height || winWidth != width) {
+        $("#game-board img").css("width", width / 4);
+        $('#game-board img').css("height", height / 4);
+    }
 }
 
 function flipTile(tile, img) {
